@@ -1,16 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { folders } from "@/lib/folders";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useFolders } from "@/lib/folders-context";
+import { useLinks } from "@/lib/links-context";
 
 export default function NewLinkForm() {
+  const router = useRouter();
+  const { folders } = useFolders();
+  const { addLink } = useLinks();
   const [url, setUrl] = useState("");
   const [folderId, setFolderId] = useState(folders[0]?.id ?? "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!url.trim() || !folderId || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
+      const og = await res.json();
+
+      addLink({
+        folderId,
+        url: og.url ?? url,
+        title: og.title ?? url,
+        description: og.description ?? "",
+        thumbnailUrl: og.thumbnailUrl ?? undefined,
+      });
+
+      router.push(`/folder/${folderId}`);
+    } catch {
+      setError("링크 정보를 가져오지 못했습니다. 다시 시도해주세요.");
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <form className="flex w-full max-w-md flex-col gap-4 p-6">
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full max-w-md flex-col gap-4 p-6"
+    >
       <input
         type="url"
+        required
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder="링크를 입력해주세요"
@@ -27,11 +64,13 @@ export default function NewLinkForm() {
           </option>
         ))}
       </select>
+      {error && <p className="text-xs text-[var(--error)]">{error}</p>}
       <button
         type="submit"
-        className="btn-primary h-11 rounded-md text-sm font-medium text-white"
+        disabled={isSubmitting}
+        className="btn-primary h-11 rounded-md text-sm font-medium text-white disabled:opacity-50"
       >
-        저장
+        {isSubmitting ? "저장 중..." : "저장"}
       </button>
     </form>
   );

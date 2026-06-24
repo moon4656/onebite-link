@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 export type LinkItem = {
   id: string;
   title: string;
@@ -7,6 +11,12 @@ export type LinkItem = {
 };
 
 export default function LinkCard({ link }: { link: LinkItem }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(link.thumbnailUrl) && !imageFailed;
+  const imgSrc = link.thumbnailUrl?.startsWith("data:")
+    ? link.thumbnailUrl
+    : `/api/image-proxy?url=${encodeURIComponent(link.thumbnailUrl ?? "")}`;
+
   return (
     <a
       href={link.url}
@@ -15,10 +25,11 @@ export default function LinkCard({ link }: { link: LinkItem }) {
       className="card-hover flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card-bg)]"
     >
       <div className="flex h-32 items-center justify-center bg-[var(--hover-bg)] text-xs text-[var(--text-sub)]">
-        {link.thumbnailUrl ? (
+        {showImage ? (
           <img
-            src={link.thumbnailUrl}
+            src={imgSrc}
             alt={link.title}
+            onError={() => setImageFailed(true)}
             className="h-full w-full object-cover"
           />
         ) : (
