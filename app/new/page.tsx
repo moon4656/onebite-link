@@ -1,14 +1,16 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import LinkGrid from "@/components/LinkGrid";
+import NewLinkForm from "@/components/NewLinkForm";
 
-export default function Home() {
+export default function NewLinkPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-black">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <LinkGrid />
+        <main className="flex flex-1 justify-center">
+          <NewLinkForm />
+        </main>
       </div>
     </div>
   );
