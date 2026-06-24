@@ -10,7 +10,7 @@ export default async function FolderPage({
   const { folderId } = await params;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-black">
+    <div className="flex min-h-screen flex-col bg-[var(--background)]">
       <Header />
       <div className="flex flex-1">
         <Sidebar />

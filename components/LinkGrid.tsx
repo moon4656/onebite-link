@@ -7,7 +7,7 @@ export default function LinkGrid({ folderId }: { folderId?: string }) {
     : links;
 
   return (
-    <section className="grid flex-1 grid-cols-2 gap-4 content-start p-6 sm:grid-cols-3 lg:grid-cols-4 auto-rows-min">
+    <section className="grid flex-1 grid-cols-2 content-start gap-4 p-6 auto-rows-min sm:grid-cols-3 lg:grid-cols-4">
       {filteredLinks.map((link) => (
         <LinkCard key={link.id} link={link} />
       ))}

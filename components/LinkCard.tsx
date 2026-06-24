@@ -12,9 +12,9 @@ export default function LinkCard({ link }: { link: LinkItem }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 transition-shadow hover:shadow-md dark:border-zinc-800"
+      className="card-hover flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--card-bg)]"
     >
-      <div className="flex h-32 items-center justify-center bg-zinc-100 text-xs text-zinc-400 dark:bg-zinc-900">
+      <div className="flex h-32 items-center justify-center bg-[var(--hover-bg)] text-xs text-[var(--text-sub)]">
         {link.thumbnailUrl ? (
           <img
             src={link.thumbnailUrl}
@@ -25,11 +25,11 @@ export default function LinkCard({ link }: { link: LinkItem }) {
           "No Image"
         )}
       </div>
-      <div className="flex flex-col gap-1 p-3">
-        <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+      <div className="flex flex-col gap-1 p-4">
+        <p className="truncate text-sm font-semibold text-[var(--text)]">
           {link.title}
         </p>
-        <p className="line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="line-clamp-2 text-xs text-[var(--text-sub)]">
           {link.description}
         </p>
       </div>

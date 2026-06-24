@@ -3,10 +3,10 @@ import { folders } from "@/lib/folders";
 
 export default function Sidebar() {
   return (
-    <aside className="flex w-56 flex-col gap-1 border-r border-zinc-200 p-4 dark:border-zinc-800">
+    <aside className="flex w-56 flex-col gap-1 border-r border-[var(--border)] p-4">
       <Link
         href="/"
-        className="rounded-md px-3 py-2 text-left text-sm font-semibold text-zinc-900 hover:bg-zinc-100 dark:text-zinc-50 dark:hover:bg-zinc-800"
+        className="list-item-hover rounded-md px-3 py-2 text-left text-sm font-semibold text-[var(--text)]"
       >
         ALL
       </Link>
@@ -15,7 +15,7 @@ export default function Sidebar() {
           <Link
             key={folder.id}
             href={`/folder/${folder.id}`}
-            className="rounded-md px-3 py-2 text-left text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="list-item-hover rounded-md px-3 py-2 text-left text-sm text-[var(--text-sub)]"
           >
             {folder.name}
           </Link>

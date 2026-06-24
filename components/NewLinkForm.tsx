@@ -14,12 +14,12 @@ export default function NewLinkForm() {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         placeholder="링크를 입력해주세요"
-        className="h-11 rounded-md border border-zinc-300 px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-black dark:focus:border-zinc-50"
+        className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
       />
       <select
         value={folderId}
         onChange={(e) => setFolderId(e.target.value)}
-        className="h-11 rounded-md border border-zinc-300 px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-black dark:focus:border-zinc-50"
+        className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none focus:border-[var(--accent)]"
       >
         {folders.map((folder) => (
           <option key={folder.id} value={folder.id}>
@@ -29,7 +29,7 @@ export default function NewLinkForm() {
       </select>
       <button
         type="submit"
-        className="h-11 rounded-full bg-zinc-900 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className="btn-primary h-11 rounded-md text-sm font-medium text-white"
       >
         저장
       </button>
