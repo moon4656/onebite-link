@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -40,6 +41,14 @@ export default function LoginPage() {
     router.push("/");
   };
 
+  const handleKakaoLogin = async () => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "kakao",
+      options: { redirectTo: window.location.origin },
+    });
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--background)] p-6">
       {toast && (
@@ -72,6 +81,20 @@ export default function LoginPage() {
             className="btn-primary h-11 rounded-md text-sm font-medium text-white disabled:opacity-50"
           >
             로그인
+          </button>
+          <button
+            type="button"
+            onClick={handleKakaoLogin}
+            className="self-center"
+          >
+            <Image
+              src="/kakao_login_large_narrow.png"
+              alt="카카오 로그인"
+              width={366}
+              height={90}
+              className="h-11 w-auto"
+              priority
+            />
           </button>
         </form>
         <p className="text-center text-sm text-[var(--text-sub)]">
