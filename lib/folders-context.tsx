@@ -1,29 +1,66 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { folders as initialFolders, type Folder } from "@/lib/folders";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import { createClient } from "@/lib/supabase/client";
+import type { Folder } from "@/lib/folders";
 
 type FoldersContextValue = {
   folders: Folder[];
-  addFolder: (name: string) => void;
-  deleteFolder: (id: string) => void;
-  renameFolder: (id: string, name: string) => void;
+  addFolder: (name: string) => Promise<void>;
+  deleteFolder: (id: number) => Promise<void>;
+  renameFolder: (id: number, name: string) => Promise<void>;
 };
 
 const FoldersContext = createContext<FoldersContextValue | null>(null);
 
 export function FoldersProvider({ children }: { children: ReactNode }) {
-  const [folders, setFolders] = useState<Folder[]>(initialFolders);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
-  const addFolder = (name: string) => {
-    setFolders((prev) => [...prev, { id: crypto.randomUUID(), name }]);
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("folders")
+      .select("id, name")
+      .order("id", { ascending: true })
+      .then(({ data }) => {
+        if (data) setFolders(data);
+      });
+  }, []);
+
+  const addFolder = async (name: string) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("folders")
+      .insert({ name })
+      .select("id, name")
+      .single();
+
+    if (error || !data) return;
+    setFolders((prev) => [...prev, data]);
   };
 
-  const deleteFolder = (id: string) => {
+  const deleteFolder = async (id: number) => {
+    const supabase = createClient();
+    const { error } = await supabase.from("folders").delete().eq("id", id);
+
+    if (error) return;
     setFolders((prev) => prev.filter((folder) => folder.id !== id));
   };
 
-  const renameFolder = (id: string, name: string) => {
+  const renameFolder = async (id: number, name: string) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("folders")
+      .update({ name })
+      .eq("id", id);
+
+    if (error) return;
     setFolders((prev) =>
       prev.map((folder) => (folder.id === id ? { ...folder, name } : folder))
     );

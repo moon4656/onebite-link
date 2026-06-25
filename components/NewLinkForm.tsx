@@ -10,7 +10,7 @@ export default function NewLinkForm() {
   const { folders } = useFolders();
   const { addLink } = useLinks();
   const [url, setUrl] = useState("");
-  const [folderId, setFolderId] = useState(folders[0]?.id ?? "");
+  const [folderId, setFolderId] = useState(String(folders[0]?.id ?? ""));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,8 +25,8 @@ export default function NewLinkForm() {
       const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
       const og = await res.json();
 
-      addLink({
-        folderId,
+      await addLink({
+        folderId: Number(folderId),
         url: og.url ?? url,
         title: og.title ?? url,
         description: og.description ?? "",
@@ -59,7 +59,7 @@ export default function NewLinkForm() {
         className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none focus:border-[var(--accent)]"
       >
         {folders.map((folder) => (
-          <option key={folder.id} value={folder.id}>
+          <option key={folder.id} value={String(folder.id)}>
             {folder.name}
           </option>
         ))}

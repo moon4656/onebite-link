@@ -2,20 +2,9 @@
 
 import { useState } from "react";
 import EditLinkModal from "./EditLinkModal";
+import type { Link } from "@/lib/links";
 
-export type LinkItem = {
-  id: string;
-  title: string;
-  url: string;
-  description: string;
-  thumbnailUrl?: string;
-};
-
-export default function LinkCard({
-  link,
-}: {
-  link: LinkItem & { folderId: string };
-}) {
+export default function LinkCard({ link }: { link: Link }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const showImage = Boolean(link.thumbnailUrl) && !imageFailed;
@@ -74,10 +63,7 @@ export default function LinkCard({
         </svg>
       </button>
       {isEditing && (
-        <EditLinkModal
-          link={link as LinkItem & { folderId: string }}
-          onClose={() => setIsEditing(false)}
-        />
+        <EditLinkModal link={link} onClose={() => setIsEditing(false)} />
       )}
     </div>
   );

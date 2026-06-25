@@ -15,8 +15,8 @@ export default function DeleteFolderModal({
 
   if (!folder) return null;
 
-  const handleDelete = () => {
-    deleteFolder(folder.id);
+  const handleDelete = async () => {
+    await deleteFolder(folder.id);
     onClose();
   };
 

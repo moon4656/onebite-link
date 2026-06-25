@@ -13,13 +13,17 @@ export default function NewFolderModal({
 }) {
   const { addFolder } = useFolders();
   const [name, setName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!open) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isSaving) return;
     const trimmed = name.trim();
     if (!trimmed) return;
-    addFolder(trimmed);
+    setIsSaving(true);
+    await addFolder(trimmed);
+    setIsSaving(false);
     setName("");
     onClose();
   };
@@ -60,7 +64,7 @@ export default function NewFolderModal({
           <button
             type="button"
             onClick={handleSave}
-            disabled={!name.trim()}
+            disabled={!name.trim() || isSaving}
             className="btn-primary h-9 rounded-md px-4 text-sm font-medium text-white disabled:opacity-50"
           >
             저장

@@ -21,7 +21,7 @@ export default function EditLinkModal({
 
   useEffect(() => {
     if (link) {
-      setFolderId(link.folderId);
+      setFolderId(String(link.folderId ?? ""));
       setTitle(link.title);
       setDescription(link.description);
     }
@@ -29,11 +29,11 @@ export default function EditLinkModal({
 
   if (!link) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle || !folderId) return;
-    updateLink(link.id, {
-      folderId,
+    await updateLink(link.id, {
+      folderId: Number(folderId),
       title: trimmedTitle,
       description: description.trim(),
     });
@@ -58,7 +58,7 @@ export default function EditLinkModal({
           className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none focus:border-[var(--accent)]"
         >
           {folders.map((folder) => (
-            <option key={folder.id} value={folder.id}>
+            <option key={folder.id} value={String(folder.id)}>
               {folder.name}
             </option>
           ))}
