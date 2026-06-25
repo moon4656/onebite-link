@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState("");
 
-  const canSubmit = email.trim() && password;
+  const canSubmit = password && confirmPassword;
 
   useEffect(() => {
     if (!toast) return;
@@ -24,20 +23,22 @@ export default function LoginPage() {
     e.preventDefault();
     if (!canSubmit || isSubmitting) return;
 
+    if (password !== confirmPassword) {
+      setToast("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
     setIsSubmitting(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      setToast("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setToast("비밀번호 재설정에 실패했습니다. 다시 시도해주세요.");
       setIsSubmitting(false);
       return;
     }
 
-    router.push("/");
+    router.push("/login");
   };
 
   return (
@@ -53,17 +54,17 @@ export default function LoginPage() {
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="이메일을 입력해주세요"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="새 비밀번호를 입력해주세요"
             className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
           />
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력해주세요"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="새 비밀번호를 다시 입력해주세요"
             className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
           />
           <button
@@ -71,23 +72,9 @@ export default function LoginPage() {
             disabled={!canSubmit || isSubmitting}
             className="btn-primary h-11 rounded-md text-sm font-medium text-white disabled:opacity-50"
           >
-            로그인
+            비밀번호 재설정
           </button>
         </form>
-        <p className="text-center text-sm text-[var(--text-sub)]">
-          <Link
-            href="/forgot-password"
-            className="text-[var(--accent)] hover:underline"
-          >
-            비밀번호 찾기
-          </Link>
-        </p>
-        <p className="text-center text-sm text-[var(--text-sub)]">
-          계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-[var(--accent)] hover:underline">
-            회원가입
-          </Link>
-        </p>
       </div>
     </div>
   );

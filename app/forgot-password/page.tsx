@@ -2,17 +2,14 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState("");
 
-  const canSubmit = email.trim() && password;
+  const canSubmit = email.trim();
 
   useEffect(() => {
     if (!toast) return;
@@ -26,18 +23,17 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
+    setIsSubmitting(false);
     if (error) {
-      setToast("이메일 또는 비밀번호가 올바르지 않습니다.");
-      setIsSubmitting(false);
+      setToast("이메일 발송에 실패했습니다. 다시 시도해주세요.");
       return;
     }
 
-    router.push("/");
+    setToast("비밀번호 재설정 링크를 이메일로 보냈습니다.");
   };
 
   return (
@@ -59,33 +55,17 @@ export default function LoginPage() {
             placeholder="이메일을 입력해주세요"
             className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
           />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력해주세요"
-            className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
-          />
           <button
             type="submit"
             disabled={!canSubmit || isSubmitting}
             className="btn-primary h-11 rounded-md text-sm font-medium text-white disabled:opacity-50"
           >
-            로그인
+            비밀번호 리셋 링크 발송
           </button>
         </form>
         <p className="text-center text-sm text-[var(--text-sub)]">
-          <Link
-            href="/forgot-password"
-            className="text-[var(--accent)] hover:underline"
-          >
-            비밀번호 찾기
-          </Link>
-        </p>
-        <p className="text-center text-sm text-[var(--text-sub)]">
-          계정이 없으신가요?{" "}
-          <Link href="/signup" className="text-[var(--accent)] hover:underline">
-            회원가입
+          <Link href="/login" className="text-[var(--accent)] hover:underline">
+            로그인으로 돌아가기
           </Link>
         </p>
       </div>
