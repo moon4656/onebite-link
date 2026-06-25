@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useFolders } from "@/lib/folders-context";
 import { useLinks } from "@/lib/links-context";
@@ -10,9 +10,15 @@ export default function NewLinkForm() {
   const { folders } = useFolders();
   const { addLink } = useLinks();
   const [url, setUrl] = useState("");
-  const [folderId, setFolderId] = useState(String(folders[0]?.id ?? ""));
+  const [folderId, setFolderId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!folderId && folders.length > 0) {
+      setFolderId(String(folders[0].id));
+    }
+  }, [folders, folderId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
