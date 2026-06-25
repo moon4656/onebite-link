@@ -4,7 +4,15 @@ import { type NextRequest, NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export const createClient = (request: NextRequest) => {
+const PROTECTED_PATHS = ["/", "/new"];
+
+function isProtectedPath(pathname: string) {
+  return (
+    PROTECTED_PATHS.includes(pathname) || pathname.startsWith("/folder/")
+  );
+}
+
+export const createClient = async (request: NextRequest) => {
   // Create an unmodified response
   let supabaseResponse = NextResponse.next({
     request: {
@@ -32,6 +40,14 @@ export const createClient = (request: NextRequest) => {
       },
     },
   );
+
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user && isProtectedPath(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse
 };
