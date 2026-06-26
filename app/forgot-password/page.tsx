@@ -53,12 +53,12 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="이메일을 입력해주세요"
-            className="h-11 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-base text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
+            className="h-9 rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 text-sm text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] focus:border-[var(--accent)]"
           />
           <button
             type="submit"
             disabled={!canSubmit || isSubmitting}
-            className="btn-primary h-11 rounded-md text-sm font-medium text-white disabled:opacity-50"
+            className="btn-primary h-9 rounded-md text-sm font-medium text-white disabled:opacity-50"
           >
             비밀번호 리셋 링크 발송
           </button>
