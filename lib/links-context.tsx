@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -43,16 +44,39 @@ const LinksContext = createContext<LinksContextValue | null>(null);
 
 export function LinksProvider({ children }: { children: ReactNode }) {
   const [links, setLinks] = useState<Link[]>([]);
+  const currentUserId = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("links")
-      .select("id, url, title, description, thumbnail_url, folder_id")
-      .order("id", { ascending: true })
-      .then(({ data }) => {
-        if (data) setLinks(data.map(toLink));
-      });
+
+    const loadLinks = async (userId: string | undefined) => {
+      if (!userId) {
+        setLinks([]);
+        return;
+      }
+      const { data } = await supabase
+        .from("links")
+        .select("id, url, title, description, thumbnail_url, folder_id")
+        .eq("user_id", userId)
+        .order("id", { ascending: true });
+      if (data) setLinks(data.map(toLink));
+    };
+
+    supabase.auth.getUser().then(({ data }) => {
+      currentUserId.current = data.user?.id;
+      loadLinks(data.user?.id);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const userId = session?.user?.id;
+        if (userId === currentUserId.current) return;
+        currentUserId.current = userId;
+        loadLinks(userId);
+      }
+    );
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   const addLink = async (link: Omit<Link, "id">) => {

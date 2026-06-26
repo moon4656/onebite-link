@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -21,16 +22,39 @@ const FoldersContext = createContext<FoldersContextValue | null>(null);
 
 export function FoldersProvider({ children }: { children: ReactNode }) {
   const [folders, setFolders] = useState<Folder[]>([]);
+  const currentUserId = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("folders")
-      .select("id, name")
-      .order("id", { ascending: true })
-      .then(({ data }) => {
-        if (data) setFolders(data);
-      });
+
+    const loadFolders = async (userId: string | undefined) => {
+      if (!userId) {
+        setFolders([]);
+        return;
+      }
+      const { data } = await supabase
+        .from("folders")
+        .select("id, name")
+        .eq("user_id", userId)
+        .order("id", { ascending: true });
+      if (data) setFolders(data);
+    };
+
+    supabase.auth.getUser().then(({ data }) => {
+      currentUserId.current = data.user?.id;
+      loadFolders(data.user?.id);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const userId = session?.user?.id;
+        if (userId === currentUserId.current) return;
+        currentUserId.current = userId;
+        loadFolders(userId);
+      }
+    );
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   const addFolder = async (name: string) => {
