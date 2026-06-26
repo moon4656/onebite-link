@@ -2,15 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useFolders } from "@/lib/folders-context";
 import type { Folder } from "@/lib/folders";
+import { createClient } from "@/lib/supabase/client";
 import DeleteFolderModal from "@/components/DeleteFolderModal";
 import EditFolderModal from "@/components/EditFolderModal";
 
 export default function Sidebar() {
+  const router = useRouter();
   const { folders } = useFolders();
   const [deleteTarget, setDeleteTarget] = useState<Folder | null>(null);
   const [editTarget, setEditTarget] = useState<Folder | null>(null);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
 
   return (
     <aside className="flex w-56 flex-col gap-1 border-r border-[var(--border)] p-4">
@@ -93,6 +102,21 @@ export default function Sidebar() {
         folder={deleteTarget}
         onClose={() => setDeleteTarget(null)}
       />
+      <div className="mt-auto flex flex-col gap-1 border-t border-[var(--border)] pt-2">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="list-item-hover rounded-md px-3 py-2 text-left text-sm text-[var(--text-sub)]"
+        >
+          로그아웃
+        </button>
+        <Link
+          href="/privacy"
+          className="list-item-hover rounded-md px-3 py-2 text-left text-sm text-[var(--text-sub)]"
+        >
+          개인정보 처리방침
+        </Link>
+      </div>
     </aside>
   );
 }
